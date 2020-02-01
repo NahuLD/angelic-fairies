@@ -3,6 +3,7 @@ package me.nahu.fairies;
 import co.aikar.commands.BukkitCommandManager;
 import me.nahu.fairies.command.PlayerCommand;
 import me.nahu.fairies.manager.PlayerManager;
+import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,8 +43,9 @@ public class Main extends JavaPlugin {
         return new Messenger(YamlConfiguration.loadConfiguration(languageFile));
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onDisable() {
-
+        playerManager.getPlayerCache().asMap().values().forEach(FakePlayer::remove);
     }
 }

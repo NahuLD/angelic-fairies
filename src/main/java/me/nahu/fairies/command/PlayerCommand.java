@@ -19,6 +19,7 @@ public class PlayerCommand extends BaseCommand {
     @Default
     @HelpCommand
     @Description("Need any help?")
+    @CommandPermission("fairies.help")
     public void sendHelp(CommandSender sender, CommandHelp commandHelp) {
         commandHelp.showHelp();
     }
