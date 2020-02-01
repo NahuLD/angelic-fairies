@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+}
+
+group 'me.nahu'
+version '1.0.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenLocal()
+    maven { url 'https://repo.aikar.co/content/groups/aikar/' }
+}
+
+dependencies {
+    compile 'co.aikar:acf-bukkit:0.5.0-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT'
+}
+
+jar.manifest.attributes(
+        'Main-Class': "${group}.${rootProject.name}.Main"
+)
+
+compileJava {
+    options.compilerArgs += ['-parameters']
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
+shadowJar {
+    archiveName = "${rootProject.name}-${version}.${extension}"
+}
+
+build.dependsOn shadowJar

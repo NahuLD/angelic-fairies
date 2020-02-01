@@ -1,0 +1,7 @@
+name: AngellicFairies
+description: A useful plugin for most playerbases.
+
+main: me.nahu.fairies.Main
+version: 1.0.0
+
+author: NahuLD
