@@ -1,0 +1,8 @@
+## Here we manage the boundaries of the players tab ping.
+ping:
+  # Max amount of ping. Recommended to take into account the scope of regional players.
+  max: 300
+  # Min amount of ping, these would likely be considered regional players.
+  min: 20
+  # Percentage which indicates how much the boundaries will fluctuate to make it believable.
+  fluctuation: 30
