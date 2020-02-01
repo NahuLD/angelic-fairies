@@ -21,6 +21,8 @@ public class FakePlayer {
 
     public FakePlayer(UUID uniqueId, String name, int ping) {
         entityPlayer = new EntityNPC(uniqueId, name, ping, DEFAULT_LOCATION);
+        this.uniqueId = uniqueId;
+        this.name = name;
     }
 
     public void send(Player player) {
@@ -37,7 +39,7 @@ public class FakePlayer {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                 entityPlayer);
         ProtocolHelper.getPlayer(player).playerConnection.sendPacket(packet);
-        entityPlayer.removeFromPlayerList(uniqueId);
+        entityPlayer.removeFromPlayerList();
     }
 
     public void remove() {

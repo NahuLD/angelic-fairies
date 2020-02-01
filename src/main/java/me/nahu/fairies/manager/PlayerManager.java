@@ -10,6 +10,7 @@ import me.nahu.fairies.helpers.ProtocolHelper;
 import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
 import me.nahu.fairies.utils.Utilities;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,10 +41,10 @@ public class PlayerManager {
     }
 
     public FakePlayer addPlayer(String name) throws IllegalArgumentException {
-        UUID uniqueId = ProtocolHelper.getUniqueId(name).orElseThrow(IllegalArgumentException::new);
-        playerIds.put(name, uniqueId);
+        Pair<UUID, String> player = ProtocolHelper.getUniqueId(name).orElseThrow(IllegalArgumentException::new);
+        playerIds.put(player.getRight(), player.getLeft());
         try {
-            FakePlayer fakePlayer = playerCache.get(uniqueId);
+            FakePlayer fakePlayer = playerCache.get(player.getLeft());
             fakePlayer.send();
             return fakePlayer;
         } catch (ExecutionException ignore) { }
@@ -51,7 +52,6 @@ public class PlayerManager {
     }
 
     public void removePlayer(FakePlayer fakePlayer) {
-        playerIds.remove(fakePlayer.getName());
         playerCache.invalidate(fakePlayer.getUniqueId());
     }
 
@@ -70,6 +70,7 @@ public class PlayerManager {
     @SuppressWarnings({"UnstableApiUsage", "ConstantConditions"})
     private void onRemoval(RemovalNotification<UUID, FakePlayer> removalNotification) {
         FakePlayer player = removalNotification.getValue();
+        playerIds.remove(player.getName());
         player.remove();
     }
     
@@ -78,7 +79,10 @@ public class PlayerManager {
             @Override
             public FakePlayer load(@NotNull UUID uniqueId) {
                 FakePlayer fakePlayer = getPlayerFromUniqueId(uniqueId);
-                messenger.get("messages.join").replace("%player", fakePlayer.getName()).broadcast();
+                messenger.get("messages.join")
+                        .replace("%player", fakePlayer.getName())
+                        .usePrefix(false)
+                        .broadcast();
                 return fakePlayer;
             }
         };

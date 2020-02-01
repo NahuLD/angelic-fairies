@@ -8,7 +8,7 @@ command:
     none: 'There are no fake players online!'
 
 error:
-  not-found: '&cCould not find player going by &e"%args"'
+  not-found: '&cCould not find player going by &e"%arg"'
 
 messages:
   join: '&e%player joined the game'

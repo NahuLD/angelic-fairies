@@ -10,31 +10,34 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
-public class EntityNPC extends EntityPlayer {
-    private static final PlayerList PLAYER_LIST = ((CraftServer) Bukkit.getServer()).getHandle();
+import static me.nahu.fairies.manager.player.FakePlayer.DEFAULT_LOCATION;
 
-    private WorldServer worldServer;
-    private Location location;
+public class EntityNPC extends EntityPlayer {
+    private static final MinecraftServer SERVER = ProtocolHelper.getServer();
+    private static final PlayerList PLAYER_LIST = ((CraftServer) Bukkit.getServer()).getHandle();
+    private static final WorldServer WORLD_SERVER = ProtocolHelper.getWorld(DEFAULT_LOCATION.getWorld());
+
+    private UUID uniqueId;
 
     public EntityNPC(UUID uniqueId, String name, int ping, Location location) {
-        super(ProtocolHelper.getServer(),
-              ProtocolHelper.getWorld(location.getWorld()),
+        super(SERVER,
+              WORLD_SERVER,
               ProtocolHelper.getGameProfile(uniqueId, name),
               new PlayerInteractManager(ProtocolHelper.getWorld(location.getWorld())));
         playerInteractManager.b(WorldSettings.EnumGamemode.SURVIVAL);
         this.playerConnection = new NPCConnection(this);
 
         this.ping = ping;
-        this.location = location;
+        this.uniqueId = uniqueId;
 
-        worldServer = ProtocolHelper.getWorld(location.getWorld());
-        worldServer.players.remove(this);
+        addToPlayerList();
+        WORLD_SERVER.players.remove(this);
     }
 
     @SuppressWarnings("unchecked")
-    private void addToPlayerList(WorldServer worldServer, UUID uniqueId) {
+    private void addToPlayerList() {
         PLAYER_LIST.players.add(this);
-        PLAYER_LIST.a(this, worldServer);
+        PLAYER_LIST.a(this, WORLD_SERVER);
         try {
             Field field = PlayerList.class.getDeclaredField("j");
             field.setAccessible(true);
@@ -47,7 +50,7 @@ public class EntityNPC extends EntityPlayer {
     }
 
     @SuppressWarnings("unchecked")
-    public void removeFromPlayerList(UUID uniqueId) {
+    public void removeFromPlayerList() {
         try {
             Field field = PlayerList.class.getDeclaredField("j");
             field.setAccessible(true);
