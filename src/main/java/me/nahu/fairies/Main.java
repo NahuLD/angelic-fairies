@@ -2,9 +2,11 @@ package me.nahu.fairies;
 
 import co.aikar.commands.BukkitCommandManager;
 import me.nahu.fairies.command.PlayerCommand;
+import me.nahu.fairies.listener.PlayerListener;
 import me.nahu.fairies.manager.PlayerManager;
 import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +37,9 @@ public class Main extends JavaPlugin {
         commandManager.registerDependency(PlayerManager.class, playerManager);
 
         commandManager.registerCommand(new PlayerCommand());
+
+        // events
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(playerManager), this);
     }
 
     private Messenger loadMessenger(FileConfiguration configuration) {
