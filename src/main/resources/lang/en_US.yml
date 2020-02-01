@@ -1,3 +1,15 @@
+prefix: '&9Fairies > &f'
+
+command:
+  add: 'Added fake player by the name: &e"%player"'
+  remove: 'Removed fake player by the name: &e"%player"'
+  list:
+    present: 'Online fake players: &a[%players]'
+    none: 'There are no fake players online!'
+
+error:
+  not-found: '&cCould not find player going by &e"%args"'
+
 messages:
   join: '&e%player joined the game'
 

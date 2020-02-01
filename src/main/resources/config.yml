@@ -1,3 +1,6 @@
+## This will be the file that will be fed to the messenger, has to be located in the "lang" folder.
+language: en_US
+
 ## Here we manage the boundaries of the players tab ping.
 ping:
   # Max amount of ping. Recommended to take into account the scope of regional players.

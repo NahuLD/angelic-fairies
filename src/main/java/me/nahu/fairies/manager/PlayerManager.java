@@ -39,13 +39,15 @@ public class PlayerManager {
         return playerCache.asMap().values().stream().filter(spoofedPlayer -> spoofedPlayer.getName().equals(name)).findFirst();
     }
 
-    public void addPlayer(String name) throws IllegalArgumentException {
+    public FakePlayer addPlayer(String name) throws IllegalArgumentException {
         UUID uniqueId = ProtocolHelper.getUniqueId(name).orElseThrow(IllegalArgumentException::new);
         playerIds.put(name, uniqueId);
         try {
             FakePlayer fakePlayer = playerCache.get(uniqueId);
             fakePlayer.send();
+            return fakePlayer;
         } catch (ExecutionException ignore) { }
+        return null;
     }
 
     public void removePlayer(FakePlayer fakePlayer) {
@@ -59,6 +61,10 @@ public class PlayerManager {
                 playerIds.inverse().get(uniqueId),
                 Utilities.getRandomNumberFromBoundary(maxPing, minPing, pingFluctuation)
         );
+    }
+
+    public LoadingCache<UUID, FakePlayer> getPlayerCache() {
+        return playerCache;
     }
 
     @SuppressWarnings({"UnstableApiUsage", "ConstantConditions"})
