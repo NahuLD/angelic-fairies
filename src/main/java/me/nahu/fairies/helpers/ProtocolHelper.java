@@ -57,14 +57,14 @@ public class ProtocolHelper {
         return profile;
     }
 
-    public Optional<String> getUniqueId(String name) {
+    public static Optional<UUID> getUniqueId(String name) {
         String url = "https://api.mojang.com/users/profiles/minecraft/".concat(name);
         try {
             String UUIDJson = IOUtils.toString(new URL(url));
             if(UUIDJson.isEmpty()) return Optional.empty();
 
-            JSONObject UUIDObject = (JSONObject) JSONValue.parseWithException(UUIDJson);
-            return Optional.of(UUIDObject.get("id").toString());
+            JSONObject object = (JSONObject) JSONValue.parseWithException(UUIDJson);
+            return Optional.of(UUID.fromString(object.get("id").toString()));
         } catch (IOException | org.json.simple.parser.ParseException e) {
             e.printStackTrace();
         }

@@ -4,41 +4,76 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import me.nahu.fairies.helpers.ProtocolHelper;
 import me.nahu.fairies.manager.player.FakePlayer;
+import me.nahu.fairies.utils.Messenger;
 import me.nahu.fairies.utils.Utilities;
-import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("UnstableApiUsage")
 public class PlayerManager {
-    private final LoadingCache<Pair<UUID, String>, FakePlayer> playerCache = CacheBuilder.newBuilder()
+    private final LoadingCache<UUID, FakePlayer> playerCache = CacheBuilder.newBuilder()
             .removalListener(this::onRemoval)
             .build(getCacheLoader());
+    private final BiMap<String, UUID> playerIds = HashBiMap.create();
 
+    private Messenger messenger;
     private int maxPing, minPing, pingFluctuation;
 
-    public PlayerManager() {
+    public PlayerManager(Messenger messenger, FileConfiguration configuration) {
+        this.messenger = messenger;
 
+        maxPing = configuration.getInt("ping.max");
+        minPing = configuration.getInt("ping.min");
+        pingFluctuation = configuration.getInt("ping.fluctuation");
     }
 
-    private FakePlayer addPlayer(String name, UUID uniqueId) {
-        return new FakePlayer(uniqueId, name, Utilities.getRandomNumberFromBoundary(maxPing, minPing, pingFluctuation));
+    public Optional<FakePlayer> getPlayer(String name) {
+        return playerCache.asMap().values().stream().filter(spoofedPlayer -> spoofedPlayer.getName().equals(name)).findFirst();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    private void onRemoval(RemovalNotification<Pair<UUID, String>, FakePlayer> removalNotification) {
+    public void addPlayer(String name) throws IllegalArgumentException {
+        UUID uniqueId = ProtocolHelper.getUniqueId(name).orElseThrow(IllegalArgumentException::new);
+        playerIds.put(name, uniqueId);
+        try {
+            FakePlayer fakePlayer = playerCache.get(uniqueId);
+            fakePlayer.send();
+        } catch (ExecutionException ignore) { }
+    }
+
+    public void removePlayer(FakePlayer fakePlayer) {
+        playerIds.remove(fakePlayer.getName());
+        playerCache.invalidate(fakePlayer.getUniqueId());
+    }
+
+    private FakePlayer getPlayerFromUniqueId(UUID uniqueId) {
+        return new FakePlayer(
+                uniqueId,
+                playerIds.inverse().get(uniqueId),
+                Utilities.getRandomNumberFromBoundary(maxPing, minPing, pingFluctuation)
+        );
+    }
+
+    @SuppressWarnings({"UnstableApiUsage", "ConstantConditions"})
+    private void onRemoval(RemovalNotification<UUID, FakePlayer> removalNotification) {
         FakePlayer player = removalNotification.getValue();
         player.remove();
     }
     
-    private CacheLoader<Pair<UUID, String>, FakePlayer> getCacheLoader() {
-        return new CacheLoader<Pair<UUID, String>, FakePlayer>() {
+    private CacheLoader<UUID, FakePlayer> getCacheLoader() {
+        return new CacheLoader<UUID, FakePlayer>() {
             @Override
-            public FakePlayer load(@NotNull Pair<UUID, String> player) {
-                // TODO send message
-                return addPlayer(player.getRight(), player.getLeft());
+            public FakePlayer load(@NotNull UUID uniqueId) {
+                FakePlayer fakePlayer = getPlayerFromUniqueId(uniqueId);
+                messenger.get("messages.join").replace("%player", fakePlayer.getName()).broadcast();
+                return fakePlayer;
             }
         };
     }
