@@ -7,6 +7,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.WorldServer;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
@@ -14,7 +15,12 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -49,5 +55,19 @@ public class ProtocolHelper {
         profile.getProperties().removeAll("textures");
         profile.getProperties().putAll("textures", skinProfile.getProperties().get("textures"));
         return profile;
+    }
+
+    public Optional<String> getUniqueId(String name) {
+        String url = "https://api.mojang.com/users/profiles/minecraft/".concat(name);
+        try {
+            String UUIDJson = IOUtils.toString(new URL(url));
+            if(UUIDJson.isEmpty()) return Optional.empty();
+
+            JSONObject UUIDObject = (JSONObject) JSONValue.parseWithException(UUIDJson);
+            return Optional.of(UUIDObject.get("id").toString());
+        } catch (IOException | org.json.simple.parser.ParseException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 }

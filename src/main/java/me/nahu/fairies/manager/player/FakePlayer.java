@@ -39,7 +39,11 @@ public class FakePlayer {
         ProtocolHelper.getPlayer(player).playerConnection.sendPacket(packet);
         entityPlayer.removeFromPlayerList(uniqueId);
     }
-    
+
+    public void remove() {
+        Bukkit.getOnlinePlayers().forEach(this::remove);
+    }
+
     public String getName() {
         return name;
     }
