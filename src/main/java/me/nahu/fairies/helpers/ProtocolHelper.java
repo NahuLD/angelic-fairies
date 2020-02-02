@@ -62,7 +62,7 @@ public class ProtocolHelper {
         String url = "https://api.mojang.com/users/profiles/minecraft/".concat(name);
         try {
             String UUIDJson = IOUtils.toString(new URL(url));
-            if(UUIDJson.isEmpty()) return Optional.empty();
+            if(UUIDJson.isEmpty()) return Optional.of(Pair.of(UUID.randomUUID(), name));
 
             JSONObject object = (JSONObject) JSONValue.parseWithException(UUIDJson);
 
@@ -74,6 +74,6 @@ public class ProtocolHelper {
         } catch (IOException | org.json.simple.parser.ParseException e) {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return Optional.of(Pair.of(UUID.randomUUID(), name));
     }
 }
