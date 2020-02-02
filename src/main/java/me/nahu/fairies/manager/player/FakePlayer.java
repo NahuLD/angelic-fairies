@@ -57,4 +57,8 @@ public class FakePlayer {
     public EntityNPC getEntityPlayer() {
         return entityPlayer;
     }
+
+    public Player getAsPlayer() {
+        return entityPlayer.getBukkitEntity();
+    }
 }

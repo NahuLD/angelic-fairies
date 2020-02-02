@@ -7,6 +7,7 @@ import me.nahu.fairies.manager.PlayerManager;
 import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class PlayerCommand extends BaseCommand {
         try {
             fakePlayer = playerManager.addPlayer(name);
         } catch (IllegalArgumentException ex) {
-            messenger.get("error.not-found").replace("%arg", name).send(sender);
+            messenger.get("error.not-found").replace("%args", name).send(sender);
             return;
         }
         messenger.get("command.add").replace("%player", fakePlayer.getName()).send(sender);
@@ -42,11 +43,28 @@ public class PlayerCommand extends BaseCommand {
     public void remove(CommandSender sender, String name) {
         java.util.Optional<FakePlayer> fakePlayer = playerManager.getPlayer(name);
         if (!fakePlayer.isPresent()) {
-            messenger.get("error.not-found").replace("%arg", name).send(sender);
+            messenger.get("error.not-found").replace("%args", name).send(sender);
             return;
         }
         messenger.get("command.remove").replace("%player", fakePlayer.get().getName()).send(sender);
         playerManager.removePlayer(fakePlayer.get());
+    }
+
+    @Subcommand("chat")
+    @CommandPermission("fairies.chat")
+    public void chat(CommandSender sender, String name, String[] args) {
+        java.util.Optional<FakePlayer> fakePlayer = playerManager.getPlayer(name);
+        if (!fakePlayer.isPresent()) {
+            messenger.get("error.not-found").replace("%args", name).send(sender);
+            return;
+        }
+        String message = Strings.join(args, " ");
+
+        fakePlayer.get().getAsPlayer().chat(message);
+        messenger.get("commands.chat")
+                .replace("%player", fakePlayer.get().getName())
+                .replace("%args", message)
+                .send(sender);
     }
 
     @Subcommand("list")

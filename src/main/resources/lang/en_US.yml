@@ -6,9 +6,10 @@ command:
   list:
     present: 'Online fake players: &a[%players]'
     none: 'There are no fake players online!'
+  chat: 'Made &e%player &fsay: &b%args'
 
 error:
-  not-found: '&cCould not find player going by &e"%arg"'
+  not-found: '&cCould not find player going by &e"%args"'
 
 messages:
   join: '&e%player joined the game'

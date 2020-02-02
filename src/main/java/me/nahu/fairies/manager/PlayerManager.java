@@ -63,6 +63,10 @@ public class PlayerManager {
         );
     }
 
+    public int getPlayerAmount() {
+        return playerCache.asMap().size();
+    }
+
     public LoadingCache<UUID, FakePlayer> getPlayerCache() {
         return playerCache;
     }

@@ -1,0 +1,21 @@
+messages:
+  - 'Hello guys, how are you all doing?'
+  - 'lol noobs'
+  - 'I think this might actually be a placeholder message'
+  - 'i have a question?'
+  - 'why dont u just shut up?'
+  - 'these violent delights have violent ends'
+  - 'si vis pacem, para bellum'
+  - 'wow guys this is epic'
+  - 'hello gamers'
+  - 'why would anyone ever do this?'
+  - 'there, like most of lives problems, this one can be solved by bending'
+  - 'brb, i''ll be back in 20'
+  - 'how irritating could you be?'
+  - 'I think this should be larger'
+  - 'HELLO EVERYBODY !!!'
+  - 'wow, there''s quite the amount of people on today'
+  - 'i havent really had the chance to try it out just yet'
+
+## Interval of "seconds" between messages
+interval: 30
