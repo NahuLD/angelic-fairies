@@ -8,6 +8,7 @@ import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
+import org.bukkit.entity.Player;
 
 import java.util.stream.Collectors;
 
@@ -60,9 +61,11 @@ public class PlayerCommand extends BaseCommand {
         }
         String message = Strings.join(args, " ");
 
-        fakePlayer.get().getAsPlayer().chat(message);
-        messenger.get("commands.chat")
-                .replace("%player", fakePlayer.get().getName())
+        Player bukkitPlayer = fakePlayer.get().getAsPlayer();
+        bukkitPlayer.chat(message);
+
+        messenger.get("command.chat")
+                .replace(bukkitPlayer)
                 .replace("%args", message)
                 .send(sender);
     }

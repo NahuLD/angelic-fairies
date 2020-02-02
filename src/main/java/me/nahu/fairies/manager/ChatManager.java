@@ -23,7 +23,7 @@ public class ChatManager {
     }
 
     public void startTask(Plugin plugin) {
-        chatTask = new ChatTask(this, playerManager).runTaskTimer(plugin, 20, cooldown);
+        chatTask = new ChatTask(this, playerManager).runTaskTimer(plugin, 20, cooldown * 20);
     }
 
     public void stopTask() {
