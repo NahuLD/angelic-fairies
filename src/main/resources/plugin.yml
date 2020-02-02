@@ -2,6 +2,8 @@ name: AngelicFairies
 description: A useful plugin for most playerbases.
 
 main: me.nahu.fairies.Main
-version: 1.0.0
+version: 1.0.1
+
+depend: [LuckPerms]
 
 author: NahuLD

@@ -10,7 +10,9 @@ import me.nahu.fairies.helpers.ProtocolHelper;
 import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
 import me.nahu.fairies.utils.Utilities;
+import net.luckperms.api.LuckPerms;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,11 +27,17 @@ public class PlayerManager {
             .build(getCacheLoader());
     private final BiMap<String, UUID> playerIds = HashBiMap.create();
 
+    private LuckPerms luckPerms;
+    private String groupName;
+
     private Messenger messenger;
     private int maxPing, minPing, pingFluctuation;
 
-    public PlayerManager(Messenger messenger, FileConfiguration configuration) {
+    public PlayerManager(Messenger messenger, LuckPerms luckPerms, FileConfiguration configuration) {
         this.messenger = messenger;
+
+        this.luckPerms = luckPerms;
+        groupName = configuration.getString("permissions.group");
 
         maxPing = configuration.getInt("ping.max");
         minPing = configuration.getInt("ping.min");
@@ -83,6 +91,9 @@ public class PlayerManager {
             @Override
             public FakePlayer load(@NotNull UUID uniqueId) {
                 FakePlayer fakePlayer = getPlayerFromUniqueId(uniqueId);
+
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                        "lp user " + fakePlayer.getUniqueId().toString() + " parent add " + groupName);
                 messenger.get("messages.join")
                         .replace("%player", fakePlayer.getName())
                         .usePrefix(false)

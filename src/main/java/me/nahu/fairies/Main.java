@@ -7,6 +7,8 @@ import me.nahu.fairies.manager.ChatManager;
 import me.nahu.fairies.manager.PlayerManager;
 import me.nahu.fairies.manager.player.FakePlayer;
 import me.nahu.fairies.utils.Messenger;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,8 +23,12 @@ public class Main extends JavaPlugin {
     private PlayerManager playerManager;
     private ChatManager chatManager;
 
+    private LuckPerms luckPerms;
+
     @Override
     public void onEnable() {
+        luckPerms = LuckPermsProvider.get();
+
         BukkitCommandManager commandManager = new BukkitCommandManager(this);
         commandManager.enableUnstableAPI("help");
         commandManager.usePerIssuerLocale(false, false);
@@ -35,7 +41,7 @@ public class Main extends JavaPlugin {
                 .forEach(file -> saveResource(file, false));
 
         messenger = loadMessenger(getConfig());
-        playerManager = new PlayerManager(messenger, getConfig());
+        playerManager = new PlayerManager(messenger, luckPerms, getConfig());
 
         chatManager = new ChatManager(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "chat.yml")), playerManager);
 

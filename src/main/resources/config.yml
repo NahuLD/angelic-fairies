@@ -9,3 +9,7 @@ ping:
   min: 20
   # Percentage which indicates how much the boundaries will fluctuate to make it believable.
   fluctuation: 30
+
+## Permission groups that will be assigned by default to each player
+permissions:
+  group: 'player'
